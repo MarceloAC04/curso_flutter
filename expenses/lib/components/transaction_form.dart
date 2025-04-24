@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'adaptative_text_field.dart';
+import 'adaptative_date_picker.dart';
+import 'adaptative_button.dart';
+
 class TransactionForm extends StatefulWidget {
   final void Function(String, double, DateTime) onSubmit;
 
@@ -15,94 +18,62 @@ class _TransactionFormState extends State<TransactionForm> {
   DateTime _selectedDate = DateTime.now();
 
   _submitForm() {
-      final title = _titleController.text;
-      final value = double.tryParse(_valueController.text) ?? 0.0;
+    final title = _titleController.text;
+    final value = double.tryParse(_valueController.text) ?? 0.0;
 
-      if (title.isEmpty || value <= 0 || _selectedDate == null) {
-        return;
-      }
-      widget.onSubmit(title, value, _selectedDate);
+    if (title.isEmpty || value <= 0 || _selectedDate == null) {
+      return;
+    }
+    widget.onSubmit(title, value, _selectedDate);
   }
 
-  _showDatePicker() {
-    showDatePicker(
-        context: context,
-        firstDate: DateTime(2025),
-        initialDate: DateTime.now(),
-        lastDate: DateTime.now()
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-
-      setState(() {
-      _selectedDate = pickedDate;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle style =
-    ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-      padding: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 20
-      )
-    );
-    final ButtonStyle textButtonStyle =
-    ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.primary
-
-    );
-    return Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            TextField(
+    final keyboard = MediaQuery.of(context).viewInsets.bottom;
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 10,
+            right: 10,
+            left: 10,
+            bottom: 10 + keyboard,
+          ),
+          child: Column(
+            children: <Widget>[
+              AdaptativeTextField(
+                label: 'Título',
                 controller: _titleController,
                 // Usa se _ quando se quer ignorar o parâmetro.
                 onSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(labelText: 'Título')),
-            TextField(
+              ),
+              AdaptativeTextField(
                 controller: _valueController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 onSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(labelText: 'Valor (R\$)')),
-            Container(
-              height: 70,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                        _selectedDate == null ? 'Nenhuma data selecionada!'
-                    : 'Data Selecionada: ${DateFormat('dd/MM/y').format(_selectedDate!)}'),
+                label:  'Valor (R\$)',
+              ),
+              AdaptativeDatePicker(
+                selectedDate: _selectedDate,
+                onDateChanged: (newDate) {
+                  setState(() {
+                    _selectedDate = newDate;
+                  });
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AdaptativeButton(
+                    onPressed: _submitForm,
+                    label: 'Nova Transação',
                   ),
-                  TextButton(
-                    style: textButtonStyle,
-                      onPressed: _showDatePicker,
-                      child: Text('Selecionar Data',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),),
-                  )
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                    style: style,
-                    onPressed: _submitForm,
-                    child: Text('Nova Transação')
-                ),
-              ],
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
