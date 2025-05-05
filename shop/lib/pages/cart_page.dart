@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/components/CartButton.dart';
 import 'package:shop/components/cart_item_widget.dart';
 
 import '../models/cart.dart';
@@ -25,11 +26,11 @@ class CartPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Total',
                     style: TextStyle(fontSize: 20),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Chip(
@@ -43,23 +44,7 @@ class CartPage extends StatelessWidget {
                                 ?.color),
                       )),
                   Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      Provider.of<OrderList>(
-                        context,
-                        listen: false,
-                      ).addOrder(cart);
-
-                      cart.clear();
-                    },
-                    child: Text('COMPRAR'),
-                    style: TextButton.styleFrom(
-                        textStyle: TextStyle(
-                            color: Theme.of(context)
-                                .primaryTextTheme
-                                .titleLarge
-                                ?.color)),
-                  )
+                  CartButton(cart: cart,)
                 ],
               ),
             ),
