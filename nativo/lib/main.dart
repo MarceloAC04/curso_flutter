@@ -14,6 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        appBarTheme: AppBarTheme(
+          color: Colors.blueAccent,
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 25, ),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),
@@ -37,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const channel = MethodChannel('flutter.com.br/nativo');
 
     try {
-      final sum =  await channel.invokeMethod('calcSum', {"a": _a, "b": _b});
+      final sum = await channel.invokeMethod('calcSum', {"a": _a, "b": _b});
       setState(() {
         _sum = sum;
       });
